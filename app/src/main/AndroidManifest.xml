@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.aidl_client">
 
+    <permission android:name="com.example.firstprogram.permission.LOCAL"></permission>
+    <uses-permission android:name="com.example.firstprogram.permission.LOCAL"></uses-permission>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
