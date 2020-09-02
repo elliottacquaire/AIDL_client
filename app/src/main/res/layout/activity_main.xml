@@ -26,4 +26,16 @@
         android:layout_height="wrap_content"
         android:text="Start Service" />
 
+    <Button
+        android:id="@+id/binderPoolsd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Service binderPool" />
+
+    <Button
+        android:id="@+id/binderPoolstart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Service binderPool check" />
+
 </LinearLayout>

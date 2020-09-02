@@ -9,6 +9,7 @@ import android.os.IBinder.DeathRecipient
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.firstprogram.ipc.IBookManagerAidlInterface
 import com.example.firstprogram.ipc.StudentBean
 import com.example.firstprogram.ipc.StudentBeanAidlInterface
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,6 +22,8 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
 
         click.setOnClickListener(this)
         button1_start_service.setOnClickListener(this)
+        binderPoolsd.setOnClickListener(this)
+        binderPoolstart.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -28,7 +31,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
         when(p0?.id){
             R.id.click -> {
                 myAidl?.addStudentBeanIn(StudentBean("xyz", 100))
-                if (myAidl != null && myAidl?.asBinder()?.isBinderAlive!!){
+                if (myAidl != null && myAidl?.asBinder()?.isBinderAlive!!) {
                     Log.d("MyAidlService", "---service isBinderAlive")
                 }
                 var list = myAidl?.studentBeanList
@@ -46,17 +49,33 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
                 mIntent.putExtra("我来自com.example", 100);
                 bindService(mIntent, serviceConnection, BIND_AUTO_CREATE)
             }
+            R.id.binderPoolsd -> {
+//                object : Thread() {
+//                    override fun run() {
+                        binderPool = BinderPool(this@MainActivity).getInstance()
+
+//                    }
+//                }.start()
+
+            }
+            R.id.binderPoolstart -> {
+                Log.d("BinderPool", "--binderPoolstart")
+                if (binderPool == null) return
+                val bookManager = IBookManagerAidlInterface.Stub.asInterface(binderPool?.queryBinder(1))
+//                val studentManager = StudentBeanAidlInterface.Stub.asInterface(binderPool?.queryBinder(2))
+                Log.d("BinderPool", "---${bookManager.books}")
+            }
         }
     }
 
-
+    private var binderPool : BinderPool? = null
     private var myAidl: StudentBeanAidlInterface? = null
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             Log.d("MyAidlService", "---service connected---${name.packageName}")
             myAidl = StudentBeanAidlInterface.Stub.asInterface(binder)
-            binder.linkToDeath(mDeathRecipient,0) //linkToDeath的第二个参数是标记位，直接设置为0即可
+            binder.linkToDeath(mDeathRecipient, 0) //linkToDeath的第二个参数是标记位，直接设置为0即可
 //            if (binder.isBinderAlive){
 //                Log.d("MyAidlService", "---service isBinderAlive")
 //            }
@@ -66,6 +85,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener {
             Log.d("MyAidlService", "---service dis connected")
         }
     }
+
 
     private val mDeathRecipient: DeathRecipient = object : DeathRecipient {
         override fun binderDied() {
